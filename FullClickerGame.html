@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title> Clicker Game </title>
+        <style>
+                    h1{
+                color: rgb(247, 255, 35);
+                margin: auto;
+                display: grid;
+                text-align: center;
+            }
+
+            body{
+                background: rgb(0,15,108);
+                background: linear-gradient(rgba(0,15,108,1) 0%, rgba(53,10,117,1) 35%, rgba(0,0,0,1) 100%);
+                color: rgb(255, 255, 255);
+                cursor: text;
+            }
+
+            .built{
+                background-color: #2d373b;
+                color: white;
+                border: 10px, rgba(43, 81, 242, 0.8), none;
+                border-style: none, none, none, solid;
+                cursor: not-allowed;
+            }
+
+            button{
+                cursor: pointer;
+                background-color: rgb(177, 96, 235);
+            }
+
+            #launchButton{
+                background-color: rgb(255, 255, 255);
+                color: rgb(0, 0, 0);
+                font-size: 25px;
+                border: 5px, black, solid;
+                padding: 50px;
+                border-radius: 100px;
+                letter-spacing: 5px;
+                float: none;
+                display: none;
+            }
+
+            #launchButton:hover{
+                cursor: pointer;
+            }
+
+            #div1{
+                background-color: rgb(255, 255, 255);
+                color: black;
+                float: right;
+                padding: 15px;
+            }
+
+            #moneyButton{
+                background-color: rgb(103, 188, 216);
+                border-color: rgb(103, 188, 216);
+                padding: 10px;
+                font-size: 50px;
+                width: 80%;
+                margin: auto;
+                display: grid;
+                padding: 10px;
+                text-align: center;
+            }
+
+            #div2{
+                padding: 10px;
+                margin: auto;
+                display: grid;
+                text-align: center;
+            }
+        </style>
+    </head>
+
+    <body>
+        <h1>Welcome to Clicker Game!</h1><br>
+        <p>Welcome to my clicker game. You have a bussines where you sell space food. Your goal is to build a rocket and launch it into space. You may be asking how to do that... well you can get money by clicking a button. The money that you get you can use to upgrade or to build parts of the rocket. Good luck, have fun.</p>
+        <div id="div2">
+
+            <h2 id="money"></h2>
+
+            <p id="MPC">Money per click: 1 $.</p>
+            <p id="MPS">Money per second: 0 $.</p>
+            <button onclick="addMoney()" id="moneyButton">Click for money!</button>
+
+        </div>
+
+        <p id="workersDesc">Workers give you 5 $ per second. They cost 100 $. You currently have 0 workers.</p>
+        <button onclick="hireWorker()">Hire worker</button>
+
+        <p id="clickUpDesc">Click upgrades give you more money per click. They cost 150 $. You currently have 1 click upgrade.</p>
+        <button onclick="buyClickUpgrade()">Buy click upgrade</button>
+
+        <p id="shopsDesc">Shops give you 50 $ per second. They cost 2 000 $. You currently have 0 shops.</p>
+        <button onclick="buyShop()">Buy shop</button>
+
+        <p id="labsDesc">Laboratories give you 150 $ per second. They cost 7 000 $. You currently have 0 laboratories.</p>
+        <button onclick="buyLab()">Buy laboratory</button>
+
+        <p id="warehousesDesc">Warehouses give you 500 $ per second. They cost 10 000 $. You currently have 0 warehouses.</p>
+        <button onclick="buyWarehouse()">Buy warehouse</button>
+
+        <p id="factoriesDesc">Factories give you 1250 $ per second. They cost 50 000 $. You currently have 0 factories.</p>
+        <button onclick="buyFactory()">Buy factory</button>
+
+        <p>To build you rocket you will need to buy parts for it. Here you can get them by paying with the money you have. You will need rocket fuel, fuel canisters, rocket engines, cockpit, platform for the rocket and control room on land.</p>
+        <div id="div1">
+            <label>Price: 70 000 $ </label><button onclick="buyPart('PlatformForRocket', 70000)" id="PlatformForRocket">Buy platform for the rocket</button><br>
+            <label>Price: 50 000 $ </label><button onclick="buyPart('RocketFuel', 50000)" id="RocketFuel">Buy rocket fuel</button><br>
+            <label>Price: 25 000 $ </label><button onclick="buyPart('FuelCanisters', 25000)" id="FuelCanisters">Buy fuel canisters</button><br>
+            <label>Price: 125 000 $ </label><button onclick="buyPart('RocketEngines', 125000)" id="RocketEngines">Buy rocket engines</button><br>
+            <label>Price: 75 000 $ </label><button onclick="buyPart('Cockpit', 75000)" id="Cockpit">Buy cockpit</button><br>
+            <label>Price: 65 000 $ </label><button onclick="buyPart('ControlRoom', 65000)" id="ControlRoom">Buy control room</button><br>
+        </div>
+        <button onclick="launch()" id="launchButton">!!!LAUNCH!!!</button><br>
+        <br>
+        <h1 id="launchCountdown" style="display: none">10</h1>
+
+        <script>
+        var money = 0;
+var moneyGain = 1;
+var moneyEl = document.getElementById("money");
+var costOfClUpgrade = 150;
+var clickUpDesc = document.getElementById("clickUpDesc");
+
+var workers = 0;
+var workersDesc = document.getElementById("workersDesc");
+var costOfWorkers = 100;
+
+var MPS = workers * 5 + shops * 50 + labs * 150 + warehouses * 500 + factories * 1250;
+var MPSel = document.getElementById("MPS");
+var MPCel = document.getElementById("MPC");
+
+var shops = 0;
+var shopsDesc = document.getElementById("shopsDesc");
+var costOfShops = 2000;
+
+var labs = 0;
+var labsDesc = document.getElementById("labsDesc");
+var costOfLabs = 7000;
+
+var warehouses = 0;
+var warehousesDesc = document.getElementById("warehousesDesc");
+var costOfWarehouses = 10000;
+
+var factories = 0;
+var factoriesDesc = document.getElementById("factoriesDesc");
+var costOfFactories = 50000;
+
+var rocketParts = {
+    "RocketFuel": false,
+    "FuelCanisters": false,
+    "RocketEngines": false,
+    "Cockpit": false,
+    "PlatformForRocket": false,
+    "ControlRoom": false
+};
+
+var launchCountdown = document.getElementById("launchCountdown");
+var num = 10;
+var launchButton = document.getElementById("launchButton");
+var clicked = false;
+
+function update(){
+    moneyEl.innerHTML = "Your money: " + money + " $";
+
+    workersDesc.innerHTML = "Workers give you 5 $ per second. They cost " + costOfWorkers + " $. You currently have " + workers + " workers.";
+
+    clickUpDesc.innerHTML = "Click upgrades give you more money per click. They cost " + costOfClUpgrade + " $. You currently have " + moneyGain + " click upgrades.";
+
+    shopsDesc.innerHTML = "Shops give you 50 $ per second. They cost " + costOfShops + " $. You currently have " + shops + " shops."
+
+    MPCel.innerHTML = "Money per click: " + moneyGain;
+    MPS = workers * 5 + shops * 50 + labs * 150 + warehouses * 500 + factories * 1250;
+    MPSel.innerHTML = "Money per second: " + MPS + " $.";
+
+    labsDesc.innerHTML = "Laboratories give you 150 $ per second. They cost " + costOfLabs + "$. You currently have " + labs + " laboratories.";
+
+    warehousesDesc.innerHTML = "Warehouses give you 500 $ per second. They cost " + costOfWarehouses +  "$. You currently have " + warehouses + " warehouses.";
+
+    factoriesDesc.innerHTML = "Factories give you 1250 $ per second. They cost " + costOfFactories + " $. You currently have " + factories + " factories.";
+
+    if(rocketParts["RocketFuel"] && rocketParts["FuelCanisters"] && rocketParts["RocketEngines"] && rocketParts["Cockpit"] && rocketParts["PlatformForRocket"] && rocketParts["ControlRoom"]){
+        launchButton.style.margin = "auto";
+        launchButton.style.display = "grid";
+        launchButton.style.textAlign = "center";
+    }
+}
+
+function addMoney(){
+    money += moneyGain;
+}
+
+function addMoneyWorkers(){
+    money += workers * 5;
+}
+
+function hireWorker(){
+    if(money >= costOfWorkers){
+        money -= costOfWorkers;
+        costOfWorkers += 50;
+        workers += 1;
+    }
+    else{
+        alert("You don't have enough money");
+    }
+}
+
+function buyClickUpgrade(){
+    if(money >= costOfClUpgrade){
+        money -= costOfClUpgrade;
+        costOfClUpgrade += 250;
+        moneyGain += 1;
+    }
+    else{
+        alert("You don't have enough money");
+    }
+}
+
+function addMoneyShops(){
+    money += shops * 50;
+}
+
+function buyShop(){
+    if(money >= costOfShops){
+        money -= costOfShops;
+        costOfShops += 500;
+        shops += 1;
+    }
+    else{
+        alert("You don't have enough money");
+    }
+}
+
+function addMoneyLabs(){
+    money += labs * 150;
+}
+
+function buyLab(){
+    if(money >= costOfLabs){
+        money -= costOfLabs;
+        costOfLabs += 1500;
+        labs += 1;
+    }
+    else{
+        alert("You don't have enough money");
+    }
+}
+
+function addMoneyWarehouses(){
+    money += warehouses * 500;
+}
+
+function buyWarehouse(){
+    if(money >= costOfWarehouses){
+        money -= costOfWarehouses;
+        costOfWarehouses += 3500;
+        warehouses += 1;
+    }
+    else{
+        alert("You don't have enough money");
+    }
+}
+
+function addMoneyFactories(){
+    money += factories * 1250
+}
+
+function buyFactory(){
+    if(money >= costOfFactories){
+        money -= costOfFactories;
+        costOfFactories += 7000;
+        factories += 1;
+    }
+    else{
+        alert("You don't have enough money");
+    }
+}
+
+function buyPart(tag, price){
+    if (money >= price && rocketParts[tag] !== true){
+        if(tag == "PlatformForRocket" || rocketParts["PlatformForRocket"] === true){
+            money -= price
+            rocketParts[tag] = true
+            document.getElementById(tag).className = "built"
+            document.getElementById(tag).attributes = "id="+ tag + " disabled"
+        }else{
+            alert("You must build the platform for the rocket first!")
+        }
+    }else if(rocketParts[tag] === true){
+        alert("This has already been bought")
+    }else{
+        alert("You don't have enough money")
+    }
+}
+
+function count(){
+    launchCountdown.style.margin = "auto";
+    launchCountdown.style.display = "grid";
+    launchCountdown.style.textAlign = "center";
+    launchCountdown.scrollIntoView();
+    launchCountdown.innerHTML = num;
+    if(num === 10){
+        num = 10;
+        launchCountdown.innerHTML = num;
+        num = 9;
+        launchCountdown.innerHTML = num;
+        num--;
+    }else if(num > 0){
+        num--;
+    }else{
+        launchCountdown.innerHTML = "ROCKET LAUNCHED! MISSION COMPLETE! CONGRAGILATIONS! YOU WIN!!!"
+    }
+}
+
+function launch(){
+    if(rocketParts["RocketFuel"] && rocketParts["FuelCanisters"] && rocketParts["RocketEngines"] && rocketParts["Cockpit"] && rocketParts["PlatformForRocket"] && rocketParts["ControlRoom"] && clicked !== true){
+        setInterval(count, 1000);
+        sound.play();
+        clicked = true;
+    }else if(clicked){
+        alert("You already started the launch!")
+    }else{
+        alert("You aren't ready to launch!")
+    }
+}
+
+var timerWorkers = setInterval(addMoneyWorkers, 1000);
+var timerShops = setInterval(addMoneyShops, 1000);
+var timerLabs = setInterval(addMoneyLabs, 1000);
+var timerWarehouses = setInterval(addMoneyWarehouses, 1000);
+var timerFactories = setInterval(addMoneyFactories, 1000)
+var timerUpdate = setInterval(update, 1);
+        </script>
+    </body>
+</html>
